@@ -1,1 +1,4 @@
 * text=auto eol=lf
+
+# Preserve exact evidence bytes so published SHA256 checksums survive checkout.
+results/diamonds/** -text

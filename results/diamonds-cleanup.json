@@ -1,0 +1,15 @@
+{
+  "remote_server_stopped": true,
+  "temporary_authorized_key_lines_removed": 1,
+  "other_authorized_key_lines_preserved": 3,
+  "jarvis_instance": "left running; game server stopped",
+  "temporary_jarvis_account_ssh_key_removed": true,
+  "temporary_local_ssh_key_files_removed": true,
+  "jarvis_api_process_closed": true,
+  "wandb_upload_process_closed": true,
+  "online_monitor_stopped_after_final_sync": true,
+  "provider_api_tokens_revoked": false,
+  "credential_retention": "Keys were used only in process memory for this experiment; no credential file was created. Provider API tokens were not revoked.",
+  "laptop_sleep": "Automatic sleep and hibernation remain disabled as requested.",
+  "results_commit_before_cleanup": "f518c2e4a283ca517588befb86068a98882ae766"
+}
