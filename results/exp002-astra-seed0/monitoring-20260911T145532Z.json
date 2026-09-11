@@ -1,0 +1,37 @@
+{
+  "run_id": "exp002-astra-seed0",
+  "started_at_utc": "2026-09-11T14:55:32Z",
+  "start_env_step": 32,
+  "observed_seconds": 634.1269702911377,
+  "snapshot_count": 39,
+  "poll_interval_seconds": 15,
+  "snapshots_with_errors": 0,
+  "final_verification": {
+    "observed_at": 1789139166.2150784,
+    "status": {
+      "phase": "waiting_teacher",
+      "env_step": 73,
+      "updates": 0,
+      "episode": 0,
+      "teacher_labels": 73,
+      "diamond_episodes": 0,
+      "total_steps": 1000000,
+      "device": "cuda:0",
+      "updated_at": 1789139160.9320207,
+      "wall_seconds": 1524.639111995697,
+      "request_id": "exp002-astra-seed0-step-0000073",
+      "network_retries": 0
+    },
+    "recorded_steps": 73,
+    "contiguous_steps": true,
+    "pixel_bytes_valid": true,
+    "frame_continuity_valid": true,
+    "reset_frames": 1,
+    "reward_total": 0.0,
+    "metrics_records": 0,
+    "checkpoints": [],
+    "gpu": "342, 250 MiB"
+  },
+  "log_sha256": "49378874f0445f13c39a4fb19ed178bc713cb6f18e635836aface177db8840d3",
+  "interpretation": "Healthy detached rollout collection. No PPO optimizer update has occurred; first update requires 512 transitions. No demonstrated learning improvement yet."
+}
