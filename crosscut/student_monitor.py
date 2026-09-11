@@ -138,8 +138,14 @@ def run(args, transport=fetch, wandb_module=None):
                     if fields:
                         tracking.log(fields)
                     tracking.summary["suite_phase"] = suite.get("phase")
+                    if suite.get("config"):
+                        tracking.config.update(suite["config"], allow_val_change=False)
                     status("watching", env_step=train.get("env_step"), updates=train.get("updates"))
                     if suite.get("phase") in ("complete", "failed"):
+                        from .student_delivery import deliver
+                        status("delivering_artifacts")
+                        # Missing manifest means the renderer/inventory is still working.
+                        deliver(tracking, root, args.server_url)
                         break
                 except (URLError, TimeoutError, ConnectionError, subprocess.CalledProcessError) as exc:
                     status("retrying", error=str(exc))
