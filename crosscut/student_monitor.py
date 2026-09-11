@@ -161,6 +161,10 @@ def run(args, transport=fetch, wandb_module=None):
             # Abrupt restarts can replay events; the source spool is never discarded.
             cursor["wandb"][sink] = sorted(pending)
             atomic_json(cursor_path, cursor)
+            if suite.get("phase") == "complete":
+                from .student_cleanup import cleanup
+                status("cleaning_up")
+                cleanup()
             status("sync_complete" if suite.get("phase") in ("complete", "failed") else "stopped",
                    artifacts_ready=suite.get("phase") in ("complete", "failed"),
                    next_action="Collect final artifacts and perform authorized cleanup")
