@@ -17,3 +17,8 @@ wandb/
 *.key
 *.pid
 *.tar.gz
+
+# Final experiment evidence explicitly requested for Git publication.
+!results/diamonds/full-recording.tar.gz
+!results/diamonds/server.log
+!results/diamonds/finish.log

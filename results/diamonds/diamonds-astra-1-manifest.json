@@ -1,0 +1,21 @@
+{
+  "session": "diamonds-astra-1",
+  "fps": 10,
+  "timing": "presentation; not wall-clock",
+  "total_steps": 137,
+  "frames": 138,
+  "episodes": [
+    {
+      "episode": 1,
+      "seed": 42,
+      "actions": 137,
+      "frames": 138,
+      "original_png_directory": "/home/CrossCut/data/server/recordings/diamonds-astra-1/episode-000001",
+      "log": "/home/CrossCut/data/results/diamonds-astra-1-episode-000001.jsonl",
+      "video": "/home/CrossCut/data/results/diamonds-astra-1-episode-000001.mp4"
+    }
+  ],
+  "full_session_video": "/home/CrossCut/data/results/full-session.mp4",
+  "full_session_frames": 138,
+  "duration_seconds": 13.8
+}

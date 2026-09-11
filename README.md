@@ -1,5 +1,7 @@
 # CrossCut
 
+**Completed:** Astra collected a diamond in **137 steps** on the first episode. See [the result, complete video, and recording evidence](results/diamonds/README.md).
+
 **One GPT-6 Astra agent plays Python Crafter to mine and collect a diamond.**
 No pretraining. Maximum **1,000,000 primitive game steps total**, across deaths,
 resets, and server restarts. Success requires Crafter's collect_diamond achievement.

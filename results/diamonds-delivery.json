@@ -1,0 +1,11 @@
+{
+  "run_url": "https://wandb.ai/nileshsarkar-ai/crosscut-diamonds/runs/diamonds",
+  "wandb_artifact": "nileshsarkar-ai/crosscut-diamonds/diamonds-astra-1-complete-gameplay:v0",
+  "wandb_artifact_state": "COMMITTED",
+  "wandb_session_closed": true,
+  "gameplay_revision": 15,
+  "winning_progress_commit": "90e63cc",
+  "result": "diamond obtained",
+  "primitive_steps": 137,
+  "full_video_frames": 138
+}

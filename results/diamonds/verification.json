@@ -1,0 +1,23 @@
+{
+  "session": "diamonds-astra-1",
+  "model": "gpt-6-astra",
+  "agents": 1,
+  "seed": 42,
+  "episodes": 1,
+  "primitive_steps": 137,
+  "step_budget": 1000000,
+  "diamond_obtained": true,
+  "inventory_diamond": 1,
+  "collect_diamond": 1,
+  "frames": 138,
+  "verified_video_frames": 138,
+  "every_video_frame_matches_original_png": true,
+  "every_png_sha256_matches_metadata": true,
+  "every_action_matches_committed_journal": true,
+  "preview_video_frames": 138,
+  "fps": 10,
+  "duration_seconds": 13.8,
+  "timing": "Presentation time; all frames shown, agent decision latency omitted.",
+  "training": false,
+  "runtime": "Unmodified crafter 1.8.3 on Jarvis L4 instance; Astra decisions in local Codex task."
+}
