@@ -82,7 +82,7 @@ def normalize(result):
     values[ACTIONS.index(action)] += 1 - EPSILON
     return values
 
-def cli_infer(directory, paths, prompt, stopped, timeout=600):
+def cli_infer(directory, paths, prompt, stopped, timeout=600, output_schema=None):
     executable = os.environ.get("ASTRA_CODEX_EXE")
     if not executable and os.name == "nt":
         desktop = Path(os.environ.get("LOCALAPPDATA", "")) / "OpenAI/Codex/bin"
@@ -94,9 +94,9 @@ def cli_infer(directory, paths, prompt, stopped, timeout=600):
         raise RuntimeError("Codex CLI must be installed and signed in locally")
     schema = directory / "schema.json"
     output = directory / "answer.json"
-    workspace = directory / "workspace"
-    workspace.mkdir(exist_ok=True)
-    atomic_json(schema, SCHEMA)
+    workspace = DEFAULT_DATA / "workspace"
+    workspace.mkdir(parents=True, exist_ok=True)
+    atomic_json(schema, output_schema or SCHEMA)
     command = [executable, "exec", "--model", MODEL, "--ephemeral", "--sandbox", "read-only",
                "--skip-git-repo-check", "--cd", str(workspace), "--json", "--color", "never",
                "-c", 'model_reasoning_effort="high"',
@@ -172,6 +172,7 @@ class Teacher:
         self.infer = infer
         self.prompt = prompt if prompt is not None else (ROOT / "prompts/student-teacher.md").read_text(encoding="utf-8")
         self.prompt_sha256 = hashlib.sha256(self.prompt.encode()).hexdigest()
+        self.batch_prompt = (ROOT / "prompts/student-teacher-batch.md").read_text(encoding="utf-8")
         self.lock = threading.Lock()
         self.active = None
 
@@ -236,6 +237,98 @@ class Teacher:
                 self.active = None
 
 
+    def predict_batch(self, body):
+        if not isinstance(body, dict) or set(body) != {"request_id", "model", "items"}:
+            raise ValueError("Expected request_id, model, and items")
+        items = body["items"]
+        if not isinstance(items, list) or not 1 <= len(items) <= 8:
+            raise ValueError("Supply one to eight independent states")
+        sample_ids, frames = [], []
+        for item in items:
+            if not isinstance(item, dict) or set(item) != {"sample_id", "frame"}:
+                raise ValueError("Each item requires sample_id and frame")
+            sample_id, decoded, _ = validate_request(dict(request_id=item["sample_id"],
+                model=body["model"], frames=[item["frame"]]))
+            sample_ids.append(sample_id)
+            frames.append(decoded[0])
+        if len(set(sample_ids)) != len(sample_ids):
+            raise ValueError("Duplicate sample IDs")
+        request_id, _, _ = validate_request(dict(request_id=body["request_id"],
+            model=body["model"], frames=[items[0]["frame"]]))
+        prompt = self.batch_prompt + "\nImage attachment order maps to sample IDs: " + json.dumps(sample_ids)
+        prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()
+        fingerprint = hashlib.sha256(json.dumps(dict(model=MODEL, sample_ids=sample_ids,
+            frames=[hashlib.sha256(frame).hexdigest() for frame in frames]), sort_keys=True).encode()).hexdigest()
+        schema = {"type": "object", "properties": {"actions": {"type": "array",
+            "minItems": len(items), "maxItems": len(items), "items": {"type": "object",
+            "properties": {"sample_id": {"type": "string", "enum": sample_ids},
+                           "action": {"type": "string", "enum": ACTIONS}},
+            "required": ["sample_id", "action"], "additionalProperties": False}}},
+            "required": ["actions"], "additionalProperties": False}
+        with self.lock:
+            directory = self.data / "batch_requests" / request_id
+            record_path = directory / "record.json"
+            attempt = 1
+            if record_path.exists():
+                record = json.loads(record_path.read_text())
+                if record["input_sha256"] != fingerprint or record["prompt_sha256"] != prompt_hash:
+                    raise Conflict("Batch request ID reused with changed input or prompt")
+                if record["status"] == "complete":
+                    return dict(record["response"], cached=True)
+                if record["status"] != "failed":
+                    raise Conflict("Prior batch is incomplete; cannot duplicate an ambiguous call")
+                attempt = record["attempt"] + 1
+            if self.stopped():
+                raise Stopped("STOP prevents new model calls")
+            directory.mkdir(parents=True, exist_ok=True)
+            atomic_json(directory / "request.json", body)
+            paths = []
+            for index, png in enumerate(frames):
+                path = directory / f"frame-{index}.png"
+                path.write_bytes(png)
+                paths.append(path)
+            record = dict(request_id=request_id, input_sha256=fingerprint,
+                prompt_sha256=prompt_hash, status="inflight", attempt=attempt)
+            atomic_json(record_path, record)
+            attempt_directory = directory / "attempts" / f"{attempt:06d}"
+            attempt_directory.mkdir(parents=True, exist_ok=True)
+            atomic_json(attempt_directory / "record.json", record)
+            self.active = request_id
+            try:
+                result, usage = self.infer(attempt_directory, paths, prompt, self.stopped, output_schema=schema)
+                if not isinstance(result, dict) or set(result) != {"actions"} or not isinstance(result["actions"], list):
+                    raise ValueError("Invalid batch teacher output")
+                chosen = {}
+                for item in result["actions"]:
+                    if not isinstance(item, dict) or set(item) != {"sample_id", "action"}:
+                        raise ValueError("Invalid batch action item")
+                    sample_id = item["sample_id"]
+                    if not isinstance(sample_id, str) or sample_id not in sample_ids or sample_id in chosen:
+                        raise ValueError("Missing, duplicate, or unknown sample ID")
+                    probabilities = normalize({"action": item["action"]})
+                    chosen[sample_id] = dict(sample_id=sample_id, chosen_action=item["action"], probabilities=probabilities)
+                if set(chosen) != set(sample_ids):
+                    raise ValueError("Missing sample IDs")
+                response = dict(request_id=request_id, model=MODEL, target_kind="smoothed_teacher_action",
+                    epsilon=EPSILON, items=[chosen[sample_id] for sample_id in sample_ids],
+                    input_sha256=fingerprint, prompt_sha256=prompt_hash, cached=False,
+                    input_protocol="batched_independent_frames")
+                atomic_json(attempt_directory / "usage.json", usage)
+                atomic_json(attempt_directory / "response.json", response)
+                atomic_json(directory / "response.json", response)
+                record.update(status="complete", response=response)
+                atomic_json(attempt_directory / "record.json", record)
+                atomic_json(record_path, record)
+                return response
+            except Exception as exc:
+                record.update(status="failed", error_type=type(exc).__name__)
+                atomic_json(attempt_directory / "record.json", record)
+                atomic_json(record_path, record)
+                raise
+            finally:
+                self.active = None
+
+
 def handler_for(teacher):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_):
@@ -256,13 +349,14 @@ def handler_for(teacher):
                 self.respond(404, {"error": "Unknown endpoint"})
 
         def do_POST(self):
-            if self.path != "/predict":
+            if self.path not in ("/predict", "/predict-batch"):
                 return self.respond(404, {"error": "Unknown endpoint"})
             try:
                 size = int(self.headers.get("Content-Length", "0"))
-                if not 0 < size <= 11210000:
+                if not 0 < size <= (22420000 if self.path == "/predict-batch" else 11210000):
                     raise ValueError("Invalid request size")
-                result = teacher.predict(json.loads(self.rfile.read(size)))
+                method = teacher.predict_batch if self.path == "/predict-batch" else teacher.predict
+                result = method(json.loads(self.rfile.read(size)))
             except Conflict as exc:
                 self.respond(409, {"error": str(exc)})
             except Stopped as exc:

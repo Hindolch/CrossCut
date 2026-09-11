@@ -1,0 +1,28 @@
+{
+  "run_id": "exp002-astra-seed0",
+  "phase": "paused",
+  "env_step": 95,
+  "updates": 0,
+  "pid": 342,
+  "snapshot_created_at": 1789139664.634476,
+  "source_commit": "beb71d20d048bb97565566de41521750201aecc9",
+  "policy_reconstruction_verified_actions": 95,
+  "new_environment_steps": 0,
+  "new_optimizer_steps": 0,
+  "video": {
+    "env_steps": 95,
+    "parts": [
+      {
+        "filename": "training-part-0000.mp4",
+        "first_step": 1,
+        "frames": 96,
+        "fps": 10,
+        "last_step": 95
+      }
+    ],
+    "source": "Lossless pre-action and post-action RGB arrays in trajectory-*.npz",
+    "selection": "Every recorded transition in chronological order; reset/terminal frames included",
+    "encoding": "H.264 compressed playback; NPZ source observations remain pixel-exact"
+  },
+  "resume_method": "SIGCONT on retained trainer after local teacher/tunnel/monitor restored; do not restart from step zero."
+}

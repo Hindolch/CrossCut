@@ -22,3 +22,6 @@ wandb/
 !results/diamonds/full-recording.tar.gz
 !results/diamonds/server.log
 !results/diamonds/finish.log
+
+# Explicitly requested resumable experiment pause snapshot (8.5 MB).
+!results/exp002-astra-seed0/pause-step-0000095.tar.gz
