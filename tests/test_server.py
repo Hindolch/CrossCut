@@ -21,7 +21,10 @@ class FakeGame:
         self.done = action == "die" or self.steps >= self.length
 
     def snapshot(self, include_image=True):
-        return dict(seed=self.seed, steps=self.steps, done=self.done, success=self.success)
+        state = dict(seed=self.seed, steps=self.steps, done=self.done, success=self.success)
+        if include_image:
+            state["image_png_base64"] = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZlWQAAAAASUVORK5CYII="
+        return state
 
 
 class StoreTests(unittest.TestCase):

@@ -8,3 +8,5 @@ opensimplex==0.4.5.1
 ruamel.yaml==0.18.15
 numba==0.61.2
 llvmlite==0.44.0
+
+imageio-ffmpeg==0.6.0

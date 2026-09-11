@@ -153,3 +153,21 @@ retry/revision handling, budget enforcement, and telemetry/Git delivery failures
 - [Codex non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode)
 - [GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra)
 - [W&B Run API](https://docs.wandb.ai/models/ref/python/experiments/run)
+
+## Complete recording
+
+The server records the initial frame and every primitive action frame as PNG,
+with a corresponding action/state JSON record. This includes terminal frames.
+Replay creates no duplicate records. After the experiment, export lossless
+per-episode MP4 videos, full JSONL action logs, and a verified session manifest:
+
+```bash
+python -m crosscut.recording --data-dir data/server --session diamonds-astra-1 --output data/results
+```
+
+Export includes only committed actions and verifies frame hashes. Videos use
+10 presentation frames per second; this is a complete action-by-action recording,
+not a recording of wall-clock waiting between model decisions. Original PNGs
+remain available. Download the raw recordings and exported results before any
+instance cleanup. Temporary API credentials are accepted through a hidden prompt
+by scripts/jarvis-session.py and are never saved in a configuration file.

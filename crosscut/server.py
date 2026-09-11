@@ -9,6 +9,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from .storage import atomic_json, process_lock
+from .recording import record_frame
 
 MAX_BATCH_STEPS = 32
 LIFETIME_STEP_BUDGET = 1000000
@@ -132,6 +133,7 @@ class SessionStore:
                         game.step(action)
                         record["actions"].append(action)
                         record["total_steps"] += 1
+                        record_frame(self.root, session, record, game, action)
                         state = game.snapshot(False)
                         if state["done"] or state["success"]:
                             break
@@ -142,6 +144,8 @@ class SessionStore:
                 raise ValueError("Unknown operation")
             record.update(revision=revision + 1, request_id=request_id, fingerprint=fingerprint)
             try:
+                if operation == "reset":
+                    record_frame(self.root, session, record, game, None)
                 atomic_json(path, record)
             except Exception:
                 self.games.pop(session, None)
