@@ -22,3 +22,6 @@ if ! kill -0 "$server_pid" 2>/dev/null; then
 fi
 printf '%s\n' "$server_pid" > data/server.pid
 printf 'Detached Crafter PID %s, loopback port %s. Log: data/server.log\n' "$server_pid" "$port"
+
+nohup .venv-server/bin/python -m crosscut.finish --data-dir data/server --session "${CROSSCUT_SESSION:-diamonds-astra-1}" --output data/results --server-url "http://127.0.0.1:$port" > data/finish.log 2>&1 < /dev/null &
+printf '%s\n' "$!" > data/finish.pid

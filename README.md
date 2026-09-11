@@ -171,3 +171,12 @@ not a recording of wall-clock waiting between model decisions. Original PNGs
 remain available. Download the raw recordings and exported results before any
 instance cleanup. Temporary API credentials are accepted through a hidden prompt
 by scripts/jarvis-session.py and are never saved in a configuration file.
+
+
+Live monitoring uses scripts/start-monitor-session.ps1 to accept a masked key
+and launch crosscut.monitor_supervisor without saving it. The supervisor retries
+tracking failures and preserves queued events. crosscut.tunnel reconnects after
+network drops. The server start script also launches crosscut.finish, which
+automatically creates full-session.mp4 after diamond success or budget exhaustion.
+Set data/local/diamonds/MONITOR_STOP to flush and stop tracking after results;
+TUNNEL_STOP stops the tunnel.
