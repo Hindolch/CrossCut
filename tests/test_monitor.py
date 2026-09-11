@@ -38,8 +38,8 @@ class MonitorTests(unittest.TestCase):
         runs = []
 
         def init(**kwargs):
-            run = types.SimpleNamespace(summary={}, logs=[], options=kwargs)
-            run.define_metric = lambda *args, **kw: None
+            run = types.SimpleNamespace(summary={}, logs=[], definitions=[], options=kwargs)
+            run.define_metric = lambda *args, **kw: run.definitions.append((args, kw))
             run.log = lambda data: run.logs.append(data)
             run.finish = lambda: None
             runs.append(run)
@@ -57,6 +57,12 @@ class MonitorTests(unittest.TestCase):
             monitor.run_monitor(self.config, once=True)
             monitor.run_monitor(self.config, once=True)
         self.assertEqual([len(run.logs) for run in runs], [1, 1, 0])
+        self.assertEqual(runs[0].definitions, [
+            (("demo-astra-1/total_steps",), {}),
+            (("demo-astra-1/*",), {"step_metric": "demo-astra-1/total_steps"})])
+        self.assertEqual(runs[0].logs[0]["demo-astra-1/total_steps"], 1)
+        self.assertEqual(runs[0].logs[0]["demo-astra-1/step_budget"], 10000)
+        self.assertFalse(runs[0].logs[0]["demo-astra-1/budget_exhausted"])
 
     def test_failed_log_keeps_telemetry_pending_and_status_visible(self):
         self.event(state())

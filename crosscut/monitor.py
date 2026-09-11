@@ -77,7 +77,7 @@ def run_monitor(config, once=False, no_wandb=False):
                     options.update(id=config["campaign"], resume="allow")
                 phase = "wandb_init"
                 run = wandb.init(**options)
-                run.define_metric("*/revision")
+                registered_sessions = set()
             while True:
                 for path in sorted((root / "events").glob("*/*.json")):
                     state = json.loads(path.read_text(encoding="utf-8"))
@@ -90,8 +90,16 @@ def run_monitor(config, once=False, no_wandb=False):
                         atomic_json(cursor_path, cursor)
                     if run and revision > delivered.get(session, 0):
                         phase = "wandb_log"
+                        if session not in registered_sessions:
+                            run.define_metric(f"{session}/total_steps")
+                            run.define_metric(f"{session}/*", step_metric=f"{session}/total_steps")
+                            registered_sessions.add(session)
                         metrics = {f"{session}/{key}": state[key] for key in
                                    ("steps", "episode", "revision", "reward", "total_reward", "success", "done")}
+                        metrics.update({
+                            f"{session}/total_steps": state.get("total_steps", state["steps"]),
+                            f"{session}/step_budget": state.get("step_budget", 10000),
+                            f"{session}/budget_exhausted": state.get("budget_exhausted", False)})
                         for group in ("inventory", "achievements"):
                             metrics.update({f"{session}/{group}/{k}": v for k, v in state[group].items()})
                         if state.get("image_path"):
@@ -103,7 +111,7 @@ def run_monitor(config, once=False, no_wandb=False):
                 phase = "watching"
                 atomic_json(status_path, {"status": "running", "phase": phase, "updated_at": time.time(),
                                          "diamond_obtained": cursor["success"]})
-                if once:
+                if once or (root / "MONITOR_STOP").exists():
                     break
                 time.sleep(5)
             if run:

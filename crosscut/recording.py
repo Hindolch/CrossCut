@@ -60,53 +60,73 @@ def export_session(root, session, output, videos=True):
     output.mkdir(parents=True, exist_ok=True)
     manifest = dict(session=session, fps=10, timing="presentation; not wall-clock",
                     total_steps=records[-1]["total_steps"], frames=0, episodes=[])
-    for record in records:
-        number = record["episode"]
-        directory = episode_dir(root, session, number)
-        name = f"{session}-episode-{number:06d}"
-        log = output / (name + ".jsonl")
-        log_tmp = log.with_suffix(".jsonl.tmp")
-        video = output / (name + ".mp4")
-        video_tmp = video.with_suffix(".partial.mp4")
-        writer = None
-        frame_count = len(record["actions"]) + 1
-        try:
-            if videos:
-                import imageio.v2 as imageio
-                writer = imageio.get_writer(str(video_tmp), format="FFMPEG", fps=10,
-                    codec="libx264rgb", pixelformat="rgb24", macro_block_size=1,
-                    ffmpeg_params=["-crf", "0", "-preset", "veryfast"])
-            with log_tmp.open("w", encoding="utf-8") as stream:
-                for step in range(frame_count):
-                    png_path = directory / f"{step:07d}.png"
-                    png = png_path.read_bytes()
-                    data = json.loads(png_path.with_suffix(".json").read_text())
-                    expected_action = None if step == 0 else record["actions"][step - 1]
-                    expected_total = record["total_steps"] - len(record["actions"]) + step
-                    if (data["step"] != step or data["episode"] != number
-                            or data["action"] != expected_action
-                            or data["total_steps"] != expected_total
-                            or data["png_sha256"] != hashlib.sha256(png).hexdigest()):
-                        raise ValueError("Recording does not match committed journal")
-                    data["png_path"] = str(png_path.resolve())
-                    stream.write(json.dumps(data, sort_keys=True) + "\n")
-                    if writer is not None:
-                        writer.append_data(imageio.imread(png))
-                stream.flush()
-                os.fsync(stream.fileno())
-            if writer is not None:
-                writer.close()
-                writer = None
-                os.replace(video_tmp, video)
-            os.replace(log_tmp, log)
-        finally:
-            if writer is not None:
-                writer.close()
-        manifest["frames"] += frame_count
-        manifest["episodes"].append(dict(episode=number, seed=record["seed"],
-            actions=len(record["actions"]), frames=frame_count,
-            original_png_directory=str(directory.resolve()),
-            log=str(log.resolve()), video=str(video.resolve()) if videos else None))
+    full_video = output / "full-session.mp4"
+    full_tmp = output / "full-session.partial.mp4"
+    full_writer = None
+    try:
+        if videos:
+            import imageio.v2 as imageio
+            full_writer = imageio.get_writer(str(full_tmp), format="FFMPEG", fps=10,
+                codec="libx264rgb", pixelformat="rgb24", macro_block_size=1,
+                ffmpeg_params=["-crf", "0", "-preset", "veryfast"])
+        for record in records:
+            number = record["episode"]
+            directory = episode_dir(root, session, number)
+            name = f"{session}-episode-{number:06d}"
+            log = output / (name + ".jsonl")
+            log_tmp = log.with_suffix(".jsonl.tmp")
+            video = output / (name + ".mp4")
+            video_tmp = video.with_suffix(".partial.mp4")
+            writer = None
+            frame_count = len(record["actions"]) + 1
+            try:
+                if videos:
+                    writer = imageio.get_writer(str(video_tmp), format="FFMPEG", fps=10,
+                        codec="libx264rgb", pixelformat="rgb24", macro_block_size=1,
+                        ffmpeg_params=["-crf", "0", "-preset", "veryfast"])
+                with log_tmp.open("w", encoding="utf-8") as stream:
+                    for step in range(frame_count):
+                        png_path = directory / f"{step:07d}.png"
+                        png = png_path.read_bytes()
+                        data = json.loads(png_path.with_suffix(".json").read_text())
+                        expected_action = None if step == 0 else record["actions"][step - 1]
+                        expected_total = record["total_steps"] - len(record["actions"]) + step
+                        if (data["step"] != step or data["episode"] != number
+                                or data["action"] != expected_action
+                                or data["total_steps"] != expected_total
+                                or data["png_sha256"] != hashlib.sha256(png).hexdigest()):
+                            raise ValueError("Recording does not match committed journal")
+                        data["png_path"] = str(png_path.resolve())
+                        stream.write(json.dumps(data, sort_keys=True) + "\n")
+                        if writer is not None:
+                            frame = imageio.imread(png)
+                            writer.append_data(frame)
+                            full_writer.append_data(frame)
+                    stream.flush()
+                    os.fsync(stream.fileno())
+                if writer is not None:
+                    writer.close()
+                    writer = None
+                    os.replace(video_tmp, video)
+                os.replace(log_tmp, log)
+            finally:
+                if writer is not None:
+                    writer.close()
+            manifest["frames"] += frame_count
+            manifest["episodes"].append(dict(episode=number, seed=record["seed"],
+                actions=len(record["actions"]), frames=frame_count,
+                original_png_directory=str(directory.resolve()),
+                log=str(log.resolve()), video=str(video.resolve()) if videos else None))
+        if full_writer is not None:
+            full_writer.close()
+            full_writer = None
+            os.replace(full_tmp, full_video)
+    finally:
+        if full_writer is not None:
+            full_writer.close()
+    manifest["full_session_video"] = str(full_video.resolve()) if videos else None
+    manifest["full_session_frames"] = manifest["frames"]
+    manifest["duration_seconds"] = manifest["frames"] / manifest["fps"]
     atomic_json(output / (session + "-manifest.json"), manifest)
     return manifest
 
