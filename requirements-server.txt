@@ -1,0 +1,10 @@
+# Target CPython 3.11-3.13. These pins are not a Python 3.14 environment.
+# Keep runtime and dependency versions identical when replaying saved actions.
+crafter==1.8.3
+numpy==2.2.6
+imageio==2.37.0
+pillow==11.3.0
+opensimplex==0.4.5.1
+ruamel.yaml==0.18.15
+numba==0.61.2
+llvmlite==0.44.0

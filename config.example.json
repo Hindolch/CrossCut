@@ -1,0 +1,19 @@
+{
+  "server_url": "http://127.0.0.1:8765",
+  "data_dir": "data/local",
+  "campaign": "diamonds",
+  "agents": 1,
+  "seed": 42,
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "decision_timeout_seconds": 600,
+  "max_decisions_per_agent": 0,
+  "autocommit": true,
+  "autopush": true,
+  "wandb": {
+    "entity": null,
+    "project": "crosscut-diamonds",
+    "mode": "offline"
+  },
+  "step_budget": 1000000
+}
