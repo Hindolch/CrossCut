@@ -44,6 +44,10 @@ def recover_video(train):
     finally:
         db.close()
     if any(recovery.glob('trajectory-*.npz')) and not (recovery / 'training_videos.json').exists():
+        # These are derivative files in this exact recovery directory; source
+        # arrays remain intact when resuming an interrupted conversion.
+        for partial in recovery.glob('training-part-*.mp4'):
+            partial.unlink()
         sys.path.insert(0, str(ROOT / 'experiments/LLM4Teach'))
         from render_training import render_training
         render_training(recovery)
@@ -61,11 +65,17 @@ def main():
                 break
             time.sleep(5)
         atomic_json(out / 'artifact-status.json', {'phase': 'preparing', 'updated_at': time.time()})
+        database = out / 'train/frames.sqlite'
+        if database.exists():
+            # SQLite backup includes committed WAL records after an abrupt death.
+            snapshot = database.with_name('frames-consistent.sqlite')
+            with sqlite3.connect(str(database)) as source, sqlite3.connect(str(snapshot)) as destination:
+                source.backup(destination)
         if suite['phase'] == 'failed' and (out / 'train/frames.sqlite').exists():
             recover_video(out / 'train')
         allowed = {'.json', '.jsonl', '.sqlite', '.pt', '.mp4', '.npz', '.log'}
         paths = [p for p in sorted(out.rglob('*')) if p.is_file() and p.suffix in allowed
-                 and p.name not in ('artifact-manifest.json', 'artifact-status.json')]
+                 and p.name not in ('artifact-manifest.json', 'artifact-status.json', 'frames.sqlite')]
         manifest = dict(run_id=suite['run_id'], phase=suite['phase'], created_at=time.time(),
             files=[dict(path=p.relative_to(out).as_posix(), size=p.stat().st_size, sha256=sha256(p)) for p in paths])
         atomic_json(out / 'artifact-manifest.json', manifest)

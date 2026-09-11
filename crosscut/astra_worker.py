@@ -83,7 +83,13 @@ def normalize(result):
     return values
 
 def cli_infer(directory, paths, prompt, stopped, timeout=600):
-    executable = shutil.which("codex")
+    executable = os.environ.get("ASTRA_CODEX_EXE")
+    if not executable and os.name == "nt":
+        desktop = Path(os.environ.get("LOCALAPPDATA", "")) / "OpenAI/Codex/bin"
+        candidates = list(desktop.glob("*/codex.exe"))
+        if candidates:
+            executable = str(max(candidates, key=lambda path: path.stat().st_mtime))
+    executable = executable or shutil.which("codex")
     if not executable:
         raise RuntimeError("Codex CLI must be installed and signed in locally")
     schema = directory / "schema.json"
@@ -101,9 +107,17 @@ def cli_infer(directory, paths, prompt, stopped, timeout=600):
     if stopped():
         raise Stopped("STOP prevents new model calls")
     usage = {}
+    errors = []
+
+    def save_error(message):
+        message = re.sub(r"(?i)(bearer\s+|sk-)[A-Za-z0-9_./+-]+", "[REDACTED]", str(message))
+        message = re.sub(r"(?i)(api[_-]?key|access[_-]?token|authorization)([\s:=]+)[^\s,;]+", r"\1=[REDACTED]", message)
+        if len(errors) < 30:
+            errors.append(message[:2000])
+
     flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL, text=True, encoding="utf-8", creationflags=flags,
+        stderr=subprocess.PIPE, text=True, encoding="utf-8", creationflags=flags,
         start_new_session=(os.name != "nt"))
 
     def consume():
@@ -111,12 +125,22 @@ def cli_infer(directory, paths, prompt, stopped, timeout=600):
         for line in process.stdout:
             try:
                 event = json.loads(line)
+                if event.get("type") in ("error", "turn.failed"):
+                    save_error(event.get("message") or event.get("error") or "CLI error")
                 if event.get("type") == "turn.completed" and isinstance(event.get("usage"), dict):
                     usage.update({k: v for k, v in event["usage"].items()
                                   if type(v) in (int, float) and math.isfinite(v)})
             except (ValueError, TypeError):
                 pass
 
+    def consume_stderr():
+        for line in process.stderr:
+            # Diagnostic errors only, never model messages/reasoning events.
+            if any(word in line.lower() for word in ("error", "failed", "unauthorized", "invalid", "unsupported", "usage:")):
+                save_error(line.strip())
+
+    stderr_reader = threading.Thread(target=consume_stderr, daemon=True)
+    stderr_reader.start()
     reader = threading.Thread(target=consume, daemon=True)
     reader.start()
     try:
@@ -135,6 +159,8 @@ def cli_infer(directory, paths, prompt, stopped, timeout=600):
     finally:
         stop_process(process)
         reader.join(timeout=5)
+        stderr_reader.join(timeout=5)
+        atomic_json(directory / "errors.json", {"exit_code": process.returncode, "errors": errors})
         atomic_json(directory / "usage.json", usage)
     return result, usage
 

@@ -54,5 +54,18 @@ W&B runs locally under the experiment-only key. Configuration, source provenance
 metrics and immutable progress commits are published to the experiment branch.
 Raw videos and model checkpoints are experiment artifacts, not automatic Git blobs.
 
+scripts/student-artifacts.py runs alongside training. It creates a consistent
+SQLite backup (including committed WAL records), recovers partial-run video if
+needed, and publishes a SHA-256 inventory. The local monitor downloads and
+verifies every artifact, uploads the full collection to W&B, and pushes a compact
+delivery receipt to Git. Successful completion then removes this experiment's
+temporary SSH access and closes the tracking process. Failed runs retain access
+for repair. The temporary Jarvis account SSH key was already removed and the API
+client closed after setup; the provider API tokens themselves are not revoked.
+
+The teacher uses the newer desktop-bundled Codex executable when available
+(override with ASTRA_CODEX_EXE). During the real launch the older PATH CLI 0.142.5
+was rejected by Astra; the installed desktop CLI 0.153.4 served the live request.
+
 This is a real run, not a smoke test. Verification uses live teacher responses,
 recorded environment actions, CUDA residency, PPO losses and parameter changes.

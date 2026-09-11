@@ -87,6 +87,7 @@ def run(args, transport=fetch, wandb_module=None):
         status_path = root / "monitor-status.json"
         tracking = None
         suite = {}
+        delivery_succeeded = False
 
         def status(phase, **extra):
             atomic_json(status_path, dict(run_id=args.run_id, status=phase,
@@ -146,6 +147,7 @@ def run(args, transport=fetch, wandb_module=None):
                         status("delivering_artifacts")
                         # Missing manifest means the renderer/inventory is still working.
                         deliver(tracking, root, args.server_url)
+                        delivery_succeeded = True
                         break
                 except (URLError, TimeoutError, ConnectionError, subprocess.CalledProcessError) as exc:
                     status("retrying", error=str(exc))
@@ -161,12 +163,12 @@ def run(args, transport=fetch, wandb_module=None):
             # Abrupt restarts can replay events; the source spool is never discarded.
             cursor["wandb"][sink] = sorted(pending)
             atomic_json(cursor_path, cursor)
-            if suite.get("phase") == "complete":
+            if suite.get("phase") == "complete" and delivery_succeeded:
                 from .student_cleanup import cleanup
                 status("cleaning_up")
                 cleanup()
-            status("sync_complete" if suite.get("phase") in ("complete", "failed") else "stopped",
-                   artifacts_ready=suite.get("phase") in ("complete", "failed"),
+            status("sync_complete" if delivery_succeeded else "stopped",
+                   artifacts_ready=delivery_succeeded,
                    next_action="Collect final artifacts and perform authorized cleanup")
         except BaseException as exc:
             status("failed", error=f"{type(exc).__name__}: {exc}")
