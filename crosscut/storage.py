@@ -3,6 +3,7 @@
 import json
 import os
 import tempfile
+import time
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -17,7 +18,17 @@ def atomic_json(path, value):
             stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(tmp, path)
+        # Windows readers can briefly deny delete-sharing during a status read.
+        # Retry replacement of this same fully synced temporary file, preserving
+        # atomic visibility instead of truncating the destination.
+        for attempt in range(21):
+            try:
+                os.replace(tmp, path)
+                break
+            except PermissionError:
+                if os.name != "nt" or attempt == 20:
+                    raise
+                time.sleep(0.05)
         if os.name != "nt":
             directory_fd = os.open(path.parent, os.O_RDONLY)
             try:
