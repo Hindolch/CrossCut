@@ -1,0 +1,12 @@
+{
+  "run_id": "exp002-astra-seed0",
+  "run_url": "https://wandb.ai/nileshsarkar-ai/crosscut-llm4teach/runs/exp002-astra-seed0",
+  "artifact": "nileshsarkar-ai/crosscut-llm4teach/exp002-astra-seed0-pause-step95:v0",
+  "phase": "paused",
+  "env_step": 95,
+  "optimizer_updates": 0,
+  "snapshot_sha256": "dfdfe4568bf695fa5c7a60ca29e089f1f4e60b527a1f4c834ec353498a9da3d0",
+  "teacher_audit_sha256": "dd1f2471da3c158d449c29b45e8c87fb3482c68e58265304f660ce937c363f07",
+  "artifact_upload_acknowledged": true,
+  "tracking_finish_acknowledged": true
+}
