@@ -1,5 +1,6 @@
 """Session-only Jarvis API access. The token is never written to disk."""
 
+import argparse
 import getpass
 import json
 import sys
@@ -10,9 +11,12 @@ from jarvislabs import Client
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--target-id', type=int, default=504029)
+    args = parser.parse_args()
     client = Client(api_key=getpass.getpass("Jarvis API key (session only): "))
     created = set()
-    target_id = 504029
+    target_id = args.target_id
     print("READY", flush=True)
     try:
         for line in sys.stdin:

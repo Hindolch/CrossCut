@@ -1,0 +1,26 @@
+{
+  "experiment_id": "exp1",
+  "name": "direct_vision_gemma12b",
+  "status": "running_seed0",
+  "environment": "crafter",
+  "training_entrypoint": "train.py",
+  "evaluation_entrypoint": "evaluate.py",
+  "remote_entrypoint": "remote_suite.py",
+  "config": "configs/gemma12b.json",
+  "training_steps": 1000000,
+  "teacher_cutoff_step": 300000,
+  "episode_horizon": 10000,
+  "evaluation_episodes": 100,
+  "training_seeds": [
+    0,
+    1,
+    2
+  ],
+  "current_execution_seeds": [
+    0
+  ],
+  "evaluation_seed_start": 10000,
+  "wandb_project": "vision-llm4teach-crafter",
+  "remote_prefix": "crafter-20260911-gemma12b-v1",
+  "path_base": "experiments/LLM4Teach"
+}

@@ -1,0 +1,219 @@
+{
+  "repository": "https://github.com/nileshsarkar-ai/Game-Playing-Agents-Crafter",
+  "commit": "08961111faa8caac1e721b7e27df347c4e73d2eb",
+  "source_directory": "experiments/LLM4Teach",
+  "scope": "Exp1/exp2 configurations and shared training/evaluation code",
+  "excluded": [
+    "upstream/",
+    "other experiment folders",
+    "model weights",
+    "recordings",
+    "architecture media/PDFs",
+    "cloud automation",
+    "environment submodules"
+  ],
+  "files": [
+    {
+      "source": "experiments/LLM4Teach/.gitignore",
+      "local": ".gitignore",
+      "source_git_blob": "3da6ed728f040a1231b7a1a80c819c56aca08aa4",
+      "sha256": "18b73f652fb564b2b7433ff98fab7522fcd8998f9d12dae79df16c6a2ff43681",
+      "bytes": 87,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/README.md",
+      "local": "README.upstream.md",
+      "source_git_blob": "2ced32dd3439b1706ea37a1e2709b3f085d968ec",
+      "sha256": "7bc79de7b00f6a9d1e0a0c21750f6d98bdfa5b6290c1a89c62f0f04fbfbdc2a6",
+      "bytes": 10805,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/requirements.txt",
+      "local": "requirements.txt",
+      "source_git_blob": "a2a4841f4d15c27dc6786aded772cc830e4696a5",
+      "sha256": "eba8c05b15fe3b59bf80f24b7b804c369a1db1c70d7dd7f3dfe4ead04d4f86d7",
+      "bytes": 245,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/student.py",
+      "local": "student.py",
+      "source_git_blob": "ebe6e38da836d825c20268439e5a4cfeb9132226",
+      "sha256": "eafb695ff5c4b7d6fd72f928dfcf7041d65a7563431d5f8c398099068e13f7f2",
+      "bytes": 773,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/teacher.py",
+      "local": "teacher.py",
+      "source_git_blob": "1590c033b95bf2b65c64592c19ed143e70810e7c",
+      "sha256": "e9747f2d9d587e06f754d6e5cb08a71164816c8c1ddb9d850914c8bc47bc7ab7",
+      "bytes": 5017,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/train.py",
+      "local": "train.py",
+      "source_git_blob": "2bc9f9cf2a984ba452474c7a0fdb2079fb0d8fed",
+      "sha256": "35c3b756ba3b463c6eec6e988dc2397e639647aac8a9988df63fc720b24d2161",
+      "bytes": 9265,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/ppo.py",
+      "local": "ppo.py",
+      "source_git_blob": "611223807a215b586b4a1f3e042deda506b0130f",
+      "sha256": "23f13e060c5f7777ac596a03a37986f45c1b5ba627bac0b255fcd37ec402d76c",
+      "bytes": 3243,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/common.py",
+      "local": "common.py",
+      "source_git_blob": "2cb7f0c96423afd6bd534e39ffe75943a6cc27b9",
+      "sha256": "ab18fb73e87d581d1863b3c7ade1ad0d81d52172e6dae2144e52135f9d665985",
+      "bytes": 3397,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/evaluate.py",
+      "local": "evaluate.py",
+      "source_git_blob": "d78279ee444a0af3bd8d6da2a8cc8f542e4aa040",
+      "sha256": "7722913d854655de5b11c6a4e2d01c531aa59f14dfafb001f49c2b84248d9417",
+      "bytes": 7105,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/schedules.py",
+      "local": "schedules.py",
+      "source_git_blob": "cac25419251932b24fc3a8f2d27a6d4ec687e147",
+      "sha256": "faba1c38bdc1682d5a7a39da14f7908fe427ebb98bfc54c1f8a3ea097b8be429",
+      "bytes": 988,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/tracking.py",
+      "local": "tracking.py",
+      "source_git_blob": "23b43ac6d638fc1951f25946d9c92c6701c6fc95",
+      "sha256": "11d1ac0217178501605fe57abf328c5bd1b22fe16e368651c475519e4a5ce1b3",
+      "bytes": 986,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/render_training.py",
+      "local": "render_training.py",
+      "source_git_blob": "94a84643a3ef7fbde2081ffaf471c0deda81ff3c",
+      "sha256": "512aaed692b5e091c2d212f2953fc2921cf2f9c589e5dbb9aab5842c186e8bfe",
+      "bytes": 3126,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/plot_learning.py",
+      "local": "plot_learning.py",
+      "source_git_blob": "e4078710b0354de877dba49bfb1217e47ce4cd3f",
+      "sha256": "a6e37423acb877bc12aa5dcabf95806a9adc3834a06e8c3b548522ab981c1c20",
+      "bytes": 2506,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/aggregate.py",
+      "local": "aggregate.py",
+      "source_git_blob": "493f3da494ee77e62e4caee7c7138b24883a2fc6",
+      "sha256": "768261ab8070731ccb9b70bd78a46d25ae9c2b4deb7ed4003759ff7a56f0d633",
+      "bytes": 2463,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/run_jarvis.sh",
+      "local": "run_jarvis.sh",
+      "source_git_blob": "e61ca48f7fb5b0739dfebad3a2f76935058318e7",
+      "sha256": "541aad0c36d80a0af485381598d6dbb6ecaa190d4268a0ad93cb1432da09bca6",
+      "bytes": 881,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/configs/gemma12b.json",
+      "local": "configs/gemma12b.json",
+      "source_git_blob": "74a378c6d83e7d4253d0c8d548b52d7d62646778",
+      "sha256": "019bdbdbac7caa36d94d7161b5f91829cfbb126cf04a85aec937768b9ab65740",
+      "bytes": 760,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/configs/ppo.json",
+      "local": "configs/ppo.json",
+      "source_git_blob": "21c2c18b9c881c84a648fb7a76cddb70450f9e2d",
+      "sha256": "182480f08c816642a53f8c76a5dd259b61f723b38e902bfc1ec925cdd3801665",
+      "bytes": 673,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/exp1/README.md",
+      "local": "exp1/README.md",
+      "source_git_blob": "16f66d9c40ff92d00b1411259c740f1691770197",
+      "sha256": "5d0f78c48cf85b3353cbc4022b8760ce1cf5dd3d0b7774b34e0af271516afabb",
+      "bytes": 2615,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/exp1/config.json",
+      "local": "exp1/config.json",
+      "source_git_blob": "e69c635513e481c738d4e2c79eec06da7391ce6a",
+      "sha256": "019bdbdbac7caa36d94d7161b5f91829cfbb126cf04a85aec937768b9ab65740",
+      "bytes": 760,
+      "transformation": "Materialized ../configs/gemma12b.json instead of a filesystem symlink"
+    },
+    {
+      "source": "experiments/LLM4Teach/exp1/manifest.json",
+      "local": "exp1/manifest.json",
+      "source_git_blob": "764ad8091aa28aedf10da7f4009e8597c5850eca",
+      "sha256": "677fd239ed2731b7816563f5832dff350708d165c503e909dcc2bd6205569251",
+      "bytes": 662,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/exp2/README.md",
+      "local": "exp2/README.md",
+      "source_git_blob": "03f6910f0abd950c4addd03bb38f459eef7f6fd0",
+      "sha256": "200105b6db67f0788c84244ed33909a533d825bdff17f76ed1cd698b9f31343d",
+      "bytes": 1884,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/exp2/config.json",
+      "local": "exp2/config.json",
+      "source_git_blob": "04ecf7582a186e229742f0d4d1c20edd7a15fe01",
+      "sha256": "3f09520c413945164f72f0e506f9cadee1c04400780ba535b8eff2b971b75920",
+      "bytes": 822,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/exp2/manifest.json",
+      "local": "exp2/manifest.json",
+      "source_git_blob": "4ce3abba0029f3124e1e6a39017af529507260e4",
+      "sha256": "01b9dfcb5c6f3a3cd94a8c8ad70dfbc9bdbe98966c3c585f7129e763cd7d6ced",
+      "bytes": 730,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/docs/EXPERIMENT_SPEC.md",
+      "local": "docs/EXPERIMENT_SPEC.md",
+      "source_git_blob": "60f67af8ccea029ea3c83107d78b7316dbeeff14",
+      "sha256": "992b1c1f5980fcea05f2dcd3b77f120ad2dcde6dfc569461096a2f60e473a3de",
+      "bytes": 15536,
+      "transformation": null
+    },
+    {
+      "source": "experiments/LLM4Teach/docs/UPSTREAM.md",
+      "local": "docs/UPSTREAM.md",
+      "source_git_blob": "e30525238c356bfd963d95331a6ef565dd2c76fe",
+      "sha256": "65e0e781bb9d4c8b0f8bb08550c3ae414708644571417023ce0eb25febf66d59",
+      "bytes": 1834,
+      "transformation": null
+    }
+  ],
+  "file_count": 25,
+  "source_bytes": 77163
+}

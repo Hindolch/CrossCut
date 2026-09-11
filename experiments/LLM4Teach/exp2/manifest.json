@@ -1,0 +1,28 @@
+{
+  "experiment_id": "exp2",
+  "name": "staged_decay_gemma12b",
+  "status": "ready_for_validation",
+  "environment": "crafter",
+  "path_base": "experiments/LLM4Teach",
+  "training_entrypoint": "train.py",
+  "evaluation_entrypoint": "evaluate.py",
+  "remote_entrypoint": "remote_suite.py",
+  "config": "exp2/config.json",
+  "comparison_experiment": "exp1",
+  "changed_factors": [
+    "teacher_weight_schedule"
+  ],
+  "training_steps": 1000000,
+  "teacher_decay_end_step": 180000,
+  "teacher_weight_floor": 0.2,
+  "teacher_cutoff_step": 300000,
+  "episode_horizon": 10000,
+  "evaluation_episodes": 100,
+  "training_seeds": [
+    0,
+    1,
+    2
+  ],
+  "evaluation_seed_start": 10000,
+  "wandb_project": "vision-llm4teach-crafter"
+}

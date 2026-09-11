@@ -1,5 +1,15 @@
 # CrossCut
 
+Experiment code and records:
+
+- [Experiment 1: direct Astra baseline](experiments/exp001_astra_baseline/README.md) — completed, diamond in 137 actions.
+- [Experiment 2: Astra teaches a CNN+GRU with PPO](experiments/LLM4Teach/README.md) — real GPU run configuration, 1,000,000-step cap.
+- [Experiment 2 configuration](experiments/LLM4Teach/exp2/astra.json) and [selective import provenance](experiments/LLM4Teach/IMPORT_MANIFEST.json).
+
+The remaining setup instructions below describe Experiment 1. Experiment 2 has
+separate student, teacher, tunnel, telemetry, and recording entry points described
+in its linked README.
+
 **Completed:** Astra collected a diamond in **137 steps** on the first episode. See [the result, complete video, and recording evidence](results/diamonds/README.md).
 
 **One GPT-6 Astra agent plays Python Crafter to mine and collect a diamond.**

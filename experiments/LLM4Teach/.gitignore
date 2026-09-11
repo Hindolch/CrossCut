@@ -1,0 +1,10 @@
+outputs/
+checkpoints/
+wandb/
+.cache/
+.venv/
+__pycache__/
+*.pyc
+*.pt
+*.safetensors
+.env

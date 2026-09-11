@@ -1,0 +1,10 @@
+# Install on the JarvisLabs GPU only; torch comes from the CUDA instance image.
+numpy==1.26.4
+pillow>=10,<13
+imageio>=2.34,<3
+opensimplex==0.4.5.1
+ruamel.yaml==0.18.6
+wandb>=0.19,<1
+transformers==5.13.0
+accelerate>=1.10,<2
+imageio-ffmpeg==0.6.0
